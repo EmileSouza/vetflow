@@ -1,0 +1,29 @@
+{
+  "name": "vetflow-app",
+  "version": "1.0.0",
+  "description": "VetFlow - Sistema de gestão para clínicas veterinárias",
+  "main": "src/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.2.0",
+    "vue-router": "^4.0.0",
+    "vuex": "^4.0.0"
+  },
+  "devDependencies": {
+    "vite": "^2.0.0",
+    "eslint": "^7.0.0",
+    "eslint-plugin-vue": "^7.0.0"
+  },
+  "keywords": [
+    "vue",
+    "veterinary",
+    "management",
+    "dashboard"
+  ],
+  "author": "Seu Nome",
+  "license": "MIT"
+}
