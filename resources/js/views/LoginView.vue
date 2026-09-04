@@ -42,9 +42,9 @@
               </svg>
             </div>
 
-            <h2 class="text-3xl font-bold tracking-tight text-slate-900">Entrar</h2>
+            <h2 class="text-3xl font-bold tracking-tight text-slate-900">  Bem-vindo de volta!</h2>
             <p class="mt-2 text-sm text-slate-500">
-              Acesse sua conta e continue o atendimento.
+             Faça login para continuar.
             </p>
           </div>
 
@@ -111,7 +111,12 @@
 
           <div class="mt-6 text-center text-sm text-slate-600">
             Não tem conta?
-            <a href="#" class="font-semibold text-emerald-600 hover:text-emerald-700">Solicitar acesso</a>
+            <router-link
+             to="/cadastro"
+             class="font-semibold text-emerald-600 hover:text-emerald-700"
+              >
+              Cadastre-se
+            </router-link>
           </div>
 
           <div
@@ -164,10 +169,7 @@ const handleLogin = async () => {
       password: form.password
     })
 
-    auth.login(data.token || 'demo-token', data.user || {
-      name: 'Dr. VetFlow',
-      role: 'Veterinário'
-    })
+    auth.login(data.token, data.veterinario)
 
     router.replace('/dashboard')
   } catch (error) {

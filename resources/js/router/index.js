@@ -10,12 +10,19 @@ import PetDetailView from '../views/pets/PetDetailView.vue'
 import AgendaView from '../views/agenda/AgendaView.vue'
 import AppointmentFormView from '../views/agenda/AppointmentFormView.vue'
 import ProntuarioView from '../views/prontuarios/ProntuarioView.vue'
+import RegisterView from '../views/RegisterView.vue'
 
 const routes = [
   {
     path: '/login',
     name: 'Login',
     component: LoginView,
+    meta: { guest: true }
+  },
+   {
+    path: '/cadastro',
+    name: 'Register',
+    component: RegisterView,
     meta: { guest: true }
   },
   {

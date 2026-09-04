@@ -17,12 +17,12 @@ class AuthController extends Controller
 
         $veterinario = Veterinario::where('email', $request->email)->first();
 
-        // Verifica se o veterinário existe e se a senha bate com a criptografada
         if (! $veterinario || ! Hash::check($request->password, $veterinario->password)) {
-            return response()->json(['message' => 'Credenciais inválidas'], 401);
+            return response()->json([
+                'message' => 'Credenciais inválidas'
+            ], 401);
         }
 
-        // Cria o "Token VIP" (Pulseira de acesso)
         $token = $veterinario->createToken('vetflow-token')->plainTextToken;
 
         return response()->json([
@@ -32,11 +32,34 @@ class AuthController extends Controller
         ]);
     }
 
+    public function register(Request $request)
+    {
+        $validated = $request->validate([
+            'nome' => 'required|string|max:255',
+            'email' => 'required|email|unique:veterinarios,email',
+            'password' => 'required|string|min:8|confirmed',
+            'crmv' => 'required|string|max:50|unique:veterinarios,crmv',
+            'telefone' => 'nullable|string|max:30',
+            'especialidade' => 'nullable|string|max:255',
+        ]);
+
+        $veterinario = Veterinario::create($validated);
+
+        $token = $veterinario->createToken('vetflow-token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Cadastro realizado com sucesso!',
+            'token' => $token,
+            'veterinario' => $veterinario
+        ], 201);
+    }
+
     public function logout(Request $request)
     {
-        // Revoga o token atual (retira a pulseira)
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Deslogado com sucesso!']);
+        return response()->json([
+            'message' => 'Deslogado com sucesso!'
+        ]);
     }
 }

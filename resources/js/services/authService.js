@@ -5,6 +5,10 @@ export const authService = {
     return api.post('/login', payload)
   },
 
+  register(payload) {
+    return api.post('/register', payload)
+  },
+
   logout() {
     return api.post('/logout')
   },

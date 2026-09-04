@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 
 // Rota PÚBLICA (Qualquer um pode tentar fazer login)
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
 
 // Grupo de Rotas PROTEGIDAS (Só entra com Token válido)
 Route::middleware('auth:sanctum')->group(function () {
