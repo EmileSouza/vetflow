@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 
 const defaultUser = {
-  name: 'Dr. VetFlow',
+  nome: 'Dr. VetFlow',
   role: 'Veterinário'
 }
 

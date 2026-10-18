@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import LoginView from '../views/LoginView.vue'
 import DashboardView from '../views/DashboardView.vue'
+import BuscarAtendimentoView from '../views/BuscarAtendimentoView.vue'
 import TutorListView from '../views/tutors/TutorListView.vue'
 import TutorFormView from '../views/tutors/TutorFormView.vue'
 import PetListView from '../views/pets/PetListView.vue'
@@ -11,6 +12,8 @@ import AgendaView from '../views/agenda/AgendaView.vue'
 import AppointmentFormView from '../views/agenda/AppointmentFormView.vue'
 import ProntuarioView from '../views/prontuarios/ProntuarioView.vue'
 import RegisterView from '../views/RegisterView.vue'
+import LandingView from '../views/LandingView.vue'
+
 
 const routes = [
   {
@@ -27,7 +30,13 @@ const routes = [
   },
   {
     path: '/',
-    redirect: '/dashboard'
+    name: 'Landing',
+    component: LandingView
+  },
+  {
+    path: '/buscar-atendimento',
+    name: 'BuscarAtendimento',
+    component: BuscarAtendimentoView
   },
   {
     path: '/dashboard',
@@ -35,6 +44,7 @@ const routes = [
     component: DashboardView,
     meta: { requiresAuth: true }
   },
+  
   {
     path: '/tutores',
     name: 'Tutores',
