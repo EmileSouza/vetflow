@@ -8,8 +8,11 @@
       <div class="p-6">
         <div class="mb-6">
           <h2 class="text-2xl font-semibold text-slate-900">
-            Olá, {{ user.name }} 👋
+            Olá, {{ user.nome }} 👋
           </h2>
+          <p class="mt-1 text-sm text-slate-500">
+            Seja bem-vinda ao VetFlow. Veja como estão seus atendimentos hoje.
+          </p>
         </div>
 
         <div class="mb-6 grid gap-4 md:grid-cols-3">

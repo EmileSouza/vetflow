@@ -10,9 +10,36 @@ class VeterinarioController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+    $request->validate([
+        'cidade' => 'required|string|max:100',
+        'uf' => 'nullable|string|size:2',
+    ]);
+
+    $query = Veterinario::query()
+        ->where('ativo', true)
+        ->where('cidade', $request->cidade);
+
+    if ($request->filled('uf')) {
+        $query->where('uf', strtoupper($request->uf));
+    }
+
+    $veterinarios = $query
+        ->select([
+            'id',
+            'nome',
+            'crmv',
+            'especialidade',
+            'cidade',
+            'uf',
+        ])
+        ->orderBy('nome')
+        ->get();
+
+    return response()->json([
+        'data' => $veterinarios
+    ]);
     }
 
     /**

@@ -41,6 +41,8 @@ class AuthController extends Controller
             'crmv' => 'required|string|max:50|unique:veterinarios,crmv',
             'telefone' => 'nullable|string|max:30',
             'especialidade' => 'nullable|string|max:255',
+            'cidade' => 'required|string|max:100',
+            'uf' => 'required|string|size:2',
         ]);
 
         $veterinario = Veterinario::create($validated);

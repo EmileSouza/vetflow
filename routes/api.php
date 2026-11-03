@@ -11,6 +11,8 @@ use App\Http\Controllers\AuthController;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
+Route::get('/veterinarios/buscar', [VeterinarioController::class, 'index']);
+
 // Grupo de Rotas PROTEGIDAS (Só entra com Token válido)
 Route::middleware('auth:sanctum')->group(function () {
     

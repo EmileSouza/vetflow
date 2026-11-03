@@ -20,6 +20,8 @@ class Veterinario extends Authenticatable
         'crmv',
         'telefone',
         'especialidade',
+        'cidade',
+        'uf',
         'ativo',
     ];
 

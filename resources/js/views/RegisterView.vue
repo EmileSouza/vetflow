@@ -124,7 +124,73 @@
               class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
             />
           </div>
+            <!-- Localização -->
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+  <!-- Cidade -->
+  <div class="sm:col-span-2">
+    <label
+      for="cidade"
+      class="mb-2 block text-sm font-medium text-slate-700"
+    >
+      Cidade
+    </label>
 
+    <input
+      id="cidade"
+      v-model="form.cidade"
+      type="text"
+      autocomplete="address-level2"
+      placeholder="Ex.: Ibirité"
+      class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+    />
+  </div>
+
+  <!-- Estado -->
+  <div>
+    <label
+      for="uf"
+      class="mb-2 block text-sm font-medium text-slate-700"
+    >
+      Estado
+    </label>
+
+    <select
+      id="uf"
+      v-model="form.uf"
+      autocomplete="address-level1"
+      class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+    >
+      <option value="" disabled>UF</option>
+      <option value="AC">AC</option>
+      <option value="AL">AL</option>
+      <option value="AP">AP</option>
+      <option value="AM">AM</option>
+      <option value="BA">BA</option>
+      <option value="CE">CE</option>
+      <option value="DF">DF</option>
+      <option value="ES">ES</option>
+      <option value="GO">GO</option>
+      <option value="MA">MA</option>
+      <option value="MT">MT</option>
+      <option value="MS">MS</option>
+      <option value="MG">MG</option>
+      <option value="PA">PA</option>
+      <option value="PB">PB</option>
+      <option value="PR">PR</option>
+      <option value="PE">PE</option>
+      <option value="PI">PI</option>
+      <option value="RJ">RJ</option>
+      <option value="RN">RN</option>
+      <option value="RS">RS</option>
+      <option value="RO">RO</option>
+      <option value="RR">RR</option>
+      <option value="SC">SC</option>
+      <option value="SP">SP</option>
+      <option value="SE">SE</option>
+      <option value="TO">TO</option>
+       </select>
+        </div>
+         </div>
           <!-- Senha -->
           <div>
             <label
@@ -243,7 +309,9 @@ const form = reactive({
   password_confirmation: '',
   crmv: '',
   telefone: '',
-  especialidade: ''
+  especialidade: '',
+  cidade: '',
+  uf: ''
 })
 
 const showPassword = ref(false)
@@ -266,7 +334,9 @@ const handleRegister = async () => {
     !form.email ||
     !form.password ||
     !form.password_confirmation ||
-    !form.crmv
+    !form.crmv ||
+    !form.cidade ||
+    !form.uf
   ) {
     status.value = {
       type: 'error',
