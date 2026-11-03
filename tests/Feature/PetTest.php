@@ -3,17 +3,37 @@
 namespace Tests\Feature;
 
 use App\Models\Tutor;
+use App\Models\Veterinario;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class PetTest extends TestCase
 {
     use RefreshDatabase;
 
+    // Executado automaticamente antes de cada teste
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // 1. Criar veterinário fictício
+        $vet = Veterinario::create([
+            'nome' => 'Dr. Carlos',
+            'email' => 'carlos@vet.com',
+            'password' => 'senha123',
+            'crmv' => 'CRMV-123'
+        ]);
+
+        // 2. Autenticar veterinário
+        Sanctum::actingAs($vet);
+    }
+
     public function test_pode_criar_um_pet_para_um_tutor_existente()
     {
+        // 1. Criar tutor
         $tutor = Tutor::create([
             'nome' => 'Carlos Mendes',
             'cpf' => '987.654.321-00',
@@ -22,6 +42,7 @@ class PetTest extends TestCase
             'endereco' => 'Av. Principal, 500'
         ]);
 
+        // 2. Cadastrar pet
         $response = $this->postJson('/api/pets', [
             'nome' => 'Rex',
             'especie' => 'Cachorro',
@@ -29,8 +50,9 @@ class PetTest extends TestCase
             'tutor_id' => $tutor->id,
         ]);
 
+        // 3. Verificar se foi criado
         $response->assertStatus(201);
-        
+
         $this->assertDatabaseHas('pets', [
             'nome' => 'Rex',
             'tutor_id' => $tutor->id
@@ -39,17 +61,23 @@ class PetTest extends TestCase
 
     public function test_nao_deve_permitir_criar_pet_sem_tutor_valido()
     {
+        // 1. Tentar cadastrar com tutor inexistente
         $response = $this->postJson('/api/pets', [
             'nome' => 'Miau',
             'especie' => 'Gato',
             'tutor_id' => 999,
         ]);
 
+        // 2. Verificar se foi recusado
         $response->assertStatus(422);
     }
 
     public function test_pode_fazer_upload_da_foto_do_pet_com_sucesso()
     {
+        // 1. Simular armazenamento de arquivos
+        Storage::fake('public');
+
+        // 2. Criar tutor
         $tutor = Tutor::create([
             'nome' => 'Ana Paula',
             'cpf' => '111.111.111-11',
@@ -58,9 +86,12 @@ class PetTest extends TestCase
             'endereco' => 'Rua X'
         ]);
 
-        // Simula um arquivo de imagem válido (JPG de 500kb)
-        $file = UploadedFile::fake()->image('rex.jpg')->size(500);
+        // 3. Criar imagem fictícia de 500 KB
+        $file = UploadedFile::fake()
+            ->image('rex.jpg')
+            ->size(500);
 
+        // 4. Enviar cadastro com foto
         $response = $this->postJson('/api/pets', [
             'nome' => 'Rex',
             'especie' => 'Cachorro',
@@ -68,15 +99,27 @@ class PetTest extends TestCase
             'foto' => $file,
         ]);
 
+        // 5. Verificar resposta
         $response->assertStatus(201);
-        $response->assertJsonStructure(['id', 'nome', 'foto_url']);
-        
-        // Verifica se o arquivo foi "salvo" no disco
-        Storage::disk('public')->assertExists('pets/' . $file->hashName());
+
+        $response->assertJsonStructure([
+            'id',
+            'nome',
+            'foto_url'
+        ]);
+
+        // 6. Verificar se a foto foi armazenada
+        Storage::disk('public')->assertExists(
+            'pets/' . $file->hashName()
+        );
     }
 
     public function test_nao_deve_permitir_upload_de_arquivo_invalido_ou_muito_pesado()
     {
+        // 1. Simular armazenamento
+        Storage::fake('public');
+
+        // 2. Criar tutor
         $tutor = Tutor::create([
             'nome' => 'Carlos',
             'cpf' => '222.222.222-22',
@@ -85,9 +128,11 @@ class PetTest extends TestCase
             'endereco' => 'Rua Y'
         ]);
 
-        // Simula um arquivo PDF (não é imagem!)
-        $file = UploadedFile::fake()->create('documento.pdf', 100);
+        // 3. Criar arquivo PDF inválido
+        $file = UploadedFile::fake()
+            ->create('documento.pdf', 100);
 
+        // 4. Tentar cadastrar pet com PDF
         $response = $this->postJson('/api/pets', [
             'nome' => 'Miau',
             'especie' => 'Gato',
@@ -95,7 +140,9 @@ class PetTest extends TestCase
             'foto' => $file,
         ]);
 
+        // 5. Verificar se o upload foi recusado
         $response->assertStatus(422);
+
         $response->assertJsonValidationErrors(['foto']);
     }
 }
