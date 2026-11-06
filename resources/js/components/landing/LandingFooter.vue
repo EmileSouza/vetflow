@@ -2,6 +2,7 @@
 import VetFlowLogo from '../common/VetFlowLogo.vue'
 import ArrowUpIcon from '../icons/ArrowUpIcon.vue'
 </script>
+
 <template>
   <footer id="contato" class="footer">
     <div class="footer-container">
@@ -20,10 +21,19 @@ import ArrowUpIcon from '../icons/ArrowUpIcon.vue'
         <a href="#contato">Contato</a>
       </nav>
 
-      <!-- Copyright -->
+      <!-- Copyright e acesso administrativo -->
       <div class="footer-copyright">
         <p>© 2026 VetFlow.</p>
         <p>Todos os direitos reservados.</p>
+
+        <RouterLink
+          to="/admin/login"
+          class="admin-link"
+          aria-label="Acessar área administrativa"
+        >
+          <span aria-hidden="true">🔒</span>
+          Área administrativa
+        </RouterLink>
       </div>
 
       <!-- Voltar ao topo -->
@@ -73,7 +83,6 @@ import ArrowUpIcon from '../icons/ArrowUpIcon.vue'
   font-size: 11px;
   font-weight: 500;
   text-decoration: none;
-
   transition: color 0.2s;
 }
 
@@ -85,7 +94,6 @@ import ArrowUpIcon from '../icons/ArrowUpIcon.vue'
 
 .footer-copyright {
   justify-self: end;
-
   color: #718096;
   font-size: 10px;
   line-height: 1.45;
@@ -96,12 +104,38 @@ import ArrowUpIcon from '../icons/ArrowUpIcon.vue'
   margin: 0;
 }
 
+/* ACESSO ADMINISTRATIVO */
+
+.admin-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  margin-top: 7px;
+
+  color: #718096;
+  font-size: 10px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.admin-link:hover {
+  color: #009b72;
+  text-decoration: underline;
+}
+
+.admin-link:focus-visible {
+  outline: 2px solid #009b72;
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
 /* SETA */
 
 .back-to-top {
   width: 34px;
   height: 34px;
-
   justify-self: end;
 
   display: flex;
@@ -110,7 +144,6 @@ import ArrowUpIcon from '../icons/ArrowUpIcon.vue'
 
   background: #e4f6ef;
   border-radius: 7px;
-
   color: #009b72;
   text-decoration: none;
 
@@ -124,4 +157,52 @@ import ArrowUpIcon from '../icons/ArrowUpIcon.vue'
   color: #008562;
 }
 
+/* RESPONSIVIDADE */
+
+@media (max-width: 1000px) {
+  .footer-container {
+    grid-template-columns: 1fr 38px;
+    row-gap: 20px;
+    padding: 24px;
+  }
+
+  .footer-brand {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .footer-links {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 14px 22px;
+    white-space: normal;
+  }
+
+  .footer-copyright {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    justify-self: start;
+  }
+
+  .admin-link {
+    justify-content: flex-start;
+  }
+
+  .back-to-top {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-container {
+    padding: 24px 16px;
+  }
+
+  .footer-links {
+    gap: 12px 18px;
+  }
+}
 </style>
