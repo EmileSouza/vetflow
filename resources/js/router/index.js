@@ -13,7 +13,7 @@ import AppointmentFormView from '../views/agenda/AppointmentFormView.vue'
 import ProntuarioView from '../views/prontuarios/ProntuarioView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import LandingView from '../views/LandingView.vue'
-
+import AdminLoginView from '../views/AdminLoginView.vue'
 
 const routes = [
   {
@@ -22,7 +22,12 @@ const routes = [
     component: LoginView,
     meta: { guest: true }
   },
-   {
+  {
+    path: '/admin/login',
+    name: 'AdminLogin',
+    component: AdminLoginView
+  },
+  {
     path: '/cadastro',
     name: 'Register',
     component: RegisterView,
@@ -44,7 +49,6 @@ const routes = [
     component: DashboardView,
     meta: { requiresAuth: true }
   },
-  
   {
     path: '/tutores',
     name: 'Tutores',

@@ -42,6 +42,12 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+         // Novo guard exclusivo da administração.
+    'admin' => [
+            'driver' => 'session',
+            'provider' => 'administradores',
+        ],
     ],
 
     /*
@@ -66,6 +72,11 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\Veterinario::class,
         ],
+
+    'administradores' => [
+        'driver' => 'eloquent',
+        'model' => \App\Models\User::class,
+    ],
 
         // 'users' => [
         //     'driver' => 'database',
