@@ -1,10 +1,15 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
 import {
   loginAdmin,
   logoutAdmin,
   obterAdmin
 } from '../services/adminApi'
+
+// Navegação entre as telas do Vue.
+const router = useRouter()
 
 const email = ref('')
 const senha = ref('')
@@ -14,18 +19,29 @@ const verificandoSessao = ref(true)
 const usuario = ref(null)
 const erro = ref('')
 
+// Verificar se já existe uma sessão administrativa.
 onMounted(async () => {
   try {
     const resposta = await obterAdmin()
+
     usuario.value = resposta.data
+
+    // NOVO: se já estiver autenticado,
+    // abrir diretamente o Dashboard.
+    await router.replace({
+      name: 'AdminDashboard'
+    })
+
   } catch {
-    // Visitantes não possuem sessão administrativa.
+    // Visitantes ainda não possuem sessão.
     usuario.value = null
+
   } finally {
     verificandoSessao.value = false
   }
 })
 
+// Realizar login.
 async function entrar() {
   if (carregando.value) return
 
@@ -39,24 +55,41 @@ async function entrar() {
     )
 
     usuario.value = resposta.data.usuario
+
+    // Limpar a senha do formulário.
     senha.value = ''
+
+    // NOVO: redirecionar após login bem-sucedido.
+    await router.replace({
+      name: 'AdminDashboard'
+    })
+
   } catch (error) {
     const status = error.response?.status
 
     if (status === 401) {
-      erro.value = 'E-mail ou senha inválidos, ou conta sem autorização.'
+      erro.value =
+        'E-mail ou senha inválidos, ou conta sem autorização.'
+
     } else if (status === 429) {
-      erro.value = 'Muitas tentativas. Tente novamente mais tarde.'
+      erro.value =
+        'Muitas tentativas. Tente novamente mais tarde.'
+
     } else if (status === 419) {
-      erro.value = 'Sua sessão expirou. Atualize a página e tente novamente.'
+      erro.value =
+        'Sua sessão expirou. Atualize a página e tente novamente.'
+
     } else {
-      erro.value = 'Não foi possível realizar o login. Tente novamente.'
+      erro.value =
+        'Não foi possível realizar o login. Tente novamente.'
     }
+
   } finally {
     carregando.value = false
   }
 }
 
+// Encerrar a sessão administrativa.
 async function sair() {
   if (carregando.value) return
 
@@ -65,16 +98,21 @@ async function sair() {
 
   try {
     await logoutAdmin()
+
     usuario.value = null
     senha.value = ''
     email.value = ''
+
   } catch {
-    erro.value = 'Não foi possível encerrar a sessão. Tente novamente.'
+    erro.value =
+      'Não foi possível encerrar a sessão. Tente novamente.'
+
   } finally {
     carregando.value = false
   }
 }
 </script>
+
 
 <template>
   <main class="admin-page">

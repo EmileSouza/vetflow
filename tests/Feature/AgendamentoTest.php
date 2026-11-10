@@ -13,6 +13,12 @@ class AgendamentoTest extends TestCase
 {
     use RefreshDatabase;
 
+    /*
+    |--------------------------------------------------------------------------
+    | TESTE 1 - Criar um agendamento com sucesso
+    |--------------------------------------------------------------------------
+    */
+
     public function test_pode_criar_um_agendamento_com_sucesso()
     {
         // 1. Criar tutor
@@ -39,7 +45,14 @@ class AgendamentoTest extends TestCase
             'crmv' => 'CRMV-123'
         ]);
 
-        // 4. Autenticar veterinário
+        // NOVO: Preparar veterinário autorizado.
+        // Esta aprovação existe apenas no banco de testes.
+        $vet->status_crmv = Veterinario::CRMV_APROVADO;
+        $vet->metodo_verificacao = 'manual';
+        $vet->ativo = true;
+        $vet->save();
+
+        // 4. Autenticar veterinário aprovado
         Sanctum::actingAs($vet);
 
         // 5. Definir data futura
@@ -63,6 +76,12 @@ class AgendamentoTest extends TestCase
             'veterinario_id' => $vet->id
         ]);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | TESTE 2 - Bloquear agendamento conflitante
+    |--------------------------------------------------------------------------
+    */
 
     public function test_nao_deve_permitir_agendamento_conflitante()
     {
@@ -90,7 +109,14 @@ class AgendamentoTest extends TestCase
             'crmv' => 'CRMV-123'
         ]);
 
-        // 4. Autenticar veterinário
+        // NOVO: Preparar veterinário autorizado.
+        // Esta aprovação existe apenas no banco de testes.
+        $vet->status_crmv = Veterinario::CRMV_APROVADO;
+        $vet->metodo_verificacao = 'manual';
+        $vet->ativo = true;
+        $vet->save();
+
+        // 4. Autenticar veterinário aprovado
         Sanctum::actingAs($vet);
 
         // 5. Definir horário para testar conflito

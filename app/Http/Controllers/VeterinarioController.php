@@ -12,34 +12,54 @@ class VeterinarioController extends Controller
      */
     public function index(Request $request)
     {
-    $request->validate([
-        'cidade' => 'required|string|max:100',
-        'uf' => 'nullable|string|size:2',
-    ]);
+        $request->validate([
+            'cidade' => 'required|string|max:100',
+            'uf' => 'nullable|string|size:2',
+        ]);
 
-    $query = Veterinario::query()
-        ->where('ativo', true)
-        ->where('cidade', $request->cidade);
+        // Buscar somente veterinários ativos
+        // com CRMV aprovado.
+        $query = Veterinario::query()
+            ->where('ativo', true)
+            ->where(
+                'status_crmv',
+                Veterinario::CRMV_APROVADO
+            )
+            ->when(
+                ! app()->environment('local', 'testing'),
+                function ($query) {
+                    $query->where(
+                        'metodo_verificacao',
+                        'manual'
+                    );
+                }
+            )
+            ->where('cidade', $request->cidade);
 
-    if ($request->filled('uf')) {
-        $query->where('uf', strtoupper($request->uf));
-    }
+        // Filtrar pelo estado, quando informado.
+        if ($request->filled('uf')) {
+            $query->where(
+                'uf',
+                strtoupper($request->uf)
+            );
+        }
 
-    $veterinarios = $query
-        ->select([
-            'id',
-            'nome',
-            'crmv',
-            'especialidade',
-            'cidade',
-            'uf',
-        ])
-        ->orderBy('nome')
-        ->get();
+        // Selecionar somente os dados públicos.
+        $veterinarios = $query
+            ->select([
+                'id',
+                'nome',
+                'crmv',
+                'especialidade',
+                'cidade',
+                'uf',
+            ])
+            ->orderBy('nome')
+            ->get();
 
-    return response()->json([
-        'data' => $veterinarios
-    ]);
+        return response()->json([
+            'data' => $veterinarios,
+        ]);
     }
 
     /**
@@ -47,24 +67,23 @@ class VeterinarioController extends Controller
      */
     public function store(Request $request)
     {
-    $validated = $request->validate([
-        'nome' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:veterinarios',
-        // 'confirmed' exige que o frontend envie 'password' e 'password_confirmation' iguais
-        'password' => 'required|string|min:6|confirmed', 
-        'crmv' => 'required|string|max:50|unique:veterinarios',
-        'telefone' => 'nullable|string|max:20',
-        'especialidade' => 'nullable|string|max:255',
-    ]);
+        $validated = $request->validate([
+            'nome' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:veterinarios',
+            'password' => 'required|string|min:6|confirmed',
+            'crmv' => 'required|string|max:50|unique:veterinarios',
+            'telefone' => 'nullable|string|max:20',
+            'especialidade' => 'nullable|string|max:255',
+        ]);
 
-    // LEMBRETE: No Model Veterinario, configuramos 'password' => 'hashed'.
-    // Isso significa que o Laravel criptografa a senha AUTOMATICAMENTE aqui!
-    $veterinario = Veterinario::create($validated);
+        // O Model Veterinario utiliza o cast "hashed"
+        // para armazenar a senha com segurança.
+        $veterinario = Veterinario::create($validated);
 
-    // Por segurança, removemos a senha do JSON de resposta
-    unset($veterinario->password);
+        // Remover a senha da resposta.
+        unset($veterinario->password);
 
-    return response()->json($veterinario, 201);
+        return response()->json($veterinario, 201);
     }
 
     /**
