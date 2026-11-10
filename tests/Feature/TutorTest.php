@@ -11,12 +11,12 @@ class TutorTest extends TestCase
 {
     use RefreshDatabase;
 
-    // Executado antes de cada teste
+    // Executado automaticamente antes de cada teste
     protected function setUp(): void
     {
         parent::setUp();
 
-        // 1. Criar veterinário para o teste
+        // 1. Criar veterinário fictício
         $vet = Veterinario::create([
             'nome' => 'Dr. Carlos',
             'email' => 'carlos@vet.com',
@@ -24,9 +24,22 @@ class TutorTest extends TestCase
             'crmv' => 'CRMV-123'
         ]);
 
-        // 2. Autenticar veterinário com Sanctum
+        // NOVO: Preparar veterinário autorizado
+        // para executar os testes de tutores.
+        $vet->status_crmv = Veterinario::CRMV_APROVADO;
+        $vet->metodo_verificacao = 'simulado';
+        $vet->ativo = true;
+        $vet->save();
+
+        // 2. Autenticar veterinário autorizado
         Sanctum::actingAs($vet);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | TESTE 1 - Cadastrar tutor com sucesso
+    |--------------------------------------------------------------------------
+    */
 
     public function test_pode_criar_um_tutor()
     {
@@ -42,6 +55,12 @@ class TutorTest extends TestCase
         // 2. Verificar se foi criado
         $response->assertStatus(201);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | TESTE 2 - Bloquear CPF duplicado
+    |--------------------------------------------------------------------------
+    */
 
     public function test_nao_deve_permitir_cadastrar_tutor_com_cpf_duplicado()
     {

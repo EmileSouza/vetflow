@@ -27,9 +27,23 @@ class PetTest extends TestCase
             'crmv' => 'CRMV-123'
         ]);
 
-        // 2. Autenticar veterinário
+        // NOVO: Preparar o veterinário para os testes.
+        // A aprovação simulada funciona apenas no ambiente
+        // local ou de testes, conforme o middleware.
+        $vet->status_crmv = Veterinario::CRMV_APROVADO;
+        $vet->metodo_verificacao = 'simulado';
+        $vet->ativo = true;
+        $vet->save();
+
+        // 2. Autenticar veterinário autorizado
         Sanctum::actingAs($vet);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | TESTE 1 - Cadastrar pet para tutor existente
+    |--------------------------------------------------------------------------
+    */
 
     public function test_pode_criar_um_pet_para_um_tutor_existente()
     {
@@ -59,6 +73,12 @@ class PetTest extends TestCase
         ]);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | TESTE 2 - Não permitir pet sem tutor válido
+    |--------------------------------------------------------------------------
+    */
+
     public function test_nao_deve_permitir_criar_pet_sem_tutor_valido()
     {
         // 1. Tentar cadastrar com tutor inexistente
@@ -71,6 +91,12 @@ class PetTest extends TestCase
         // 2. Verificar se foi recusado
         $response->assertStatus(422);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | TESTE 3 - Upload válido da foto do pet
+    |--------------------------------------------------------------------------
+    */
 
     public function test_pode_fazer_upload_da_foto_do_pet_com_sucesso()
     {
@@ -113,6 +139,12 @@ class PetTest extends TestCase
             'pets/' . $file->hashName()
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | TESTE 4 - Bloquear upload inválido
+    |--------------------------------------------------------------------------
+    */
 
     public function test_nao_deve_permitir_upload_de_arquivo_invalido_ou_muito_pesado()
     {

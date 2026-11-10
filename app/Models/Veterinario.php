@@ -11,8 +11,15 @@ class Veterinario extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    // Estados possíveis da verificação do CRMV
+    public const CRMV_PENDENTE = 'pendente';
+    public const CRMV_APROVADO = 'aprovado';
+    public const CRMV_REJEITADO = 'rejeitado';
+
     protected $table = 'veterinarios';
 
+    // Somente dados permitidos no preenchimento em massa.
+    // Campos administrativos não devem entrar nesta lista.
     protected $fillable = [
         'nome',
         'email',
@@ -22,7 +29,6 @@ class Veterinario extends Authenticatable
         'especialidade',
         'cidade',
         'uf',
-        'ativo',
     ];
 
     protected $hidden = [
@@ -32,13 +38,23 @@ class Veterinario extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed', // Isso criptografa a senha automaticamente ao salvar!
+        'password' => 'hashed',
         'ativo' => 'boolean',
+        'crmv_verificado_em' => 'datetime',
     ];
 
-    // Um veterinário tem muitos agendamentos
+    // Um veterinário pode possuir vários agendamentos.
     public function agendamentos()
     {
         return $this->hasMany(Agendamento::class);
+    }
+
+    // Administrador responsável pela verificação do CRMV.
+    public function verificadoPor()
+    {
+        return $this->belongsTo(
+            User::class,
+            'crmv_verificado_por'
+        );
     }
 }
